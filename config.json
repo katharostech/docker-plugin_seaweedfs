@@ -1,0 +1,80 @@
+{
+  "description": "LizardFS volume plugin for Docker",
+  "documentation": "https://docs.docker.com/engine/extend/plugins/",
+  "workdir": "/project",
+  "entrypoint": [
+    "node",
+    "index.js"
+  ],
+  "env": [
+    {
+      "name": "HOST",
+      "settable": [
+        "value"
+      ],
+      "value": "mfsmaster"
+    },
+    {
+      "name": "PORT",
+      "settable": [
+        "value"
+      ],
+      "value": "9421"
+    },
+    {
+      "name": "ROOT_VOLUME_NAME",
+      "settable": [
+        "value"
+      ],
+      "value": ""
+    },
+    {
+      "name": "MOUNT_OPTIONS",
+      "settable": [
+        "value"
+      ],
+      "value": ""
+    },
+    {
+      "name": "REMOTE_PATH",
+      "settable": [
+        "value"
+      ],
+      "value": "/docker/volumes"
+    },
+    {
+      "name": "CONNECT_TIMEOUT",
+      "settable": [
+        "value"
+      ],
+      "value": "10000"
+    },
+    {
+      "name": "LOG_LEVEL",
+      "settable": [
+        "value"
+      ],
+      "value": "info"
+    }
+  ],
+  "interface": {
+    "socket": "lizardfs.sock",
+    "types": [
+      "docker.volumedriver/2.0"
+    ]
+  },
+  "linux": {
+    "capabilities": [
+      "CAP_SYS_ADMIN"
+    ],
+    "devices": [
+      {
+        "path": "/dev/fuse"
+      }
+    ]
+  },
+  "network": {
+    "type": "host"
+  },
+  "propagatedMount": "/mnt/docker-volumes"
+}

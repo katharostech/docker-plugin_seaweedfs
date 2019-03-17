@@ -1,0 +1,50 @@
+#
+# WIP docker-compose file for running SeaweedFS cluster
+#
+# For quick testing of the plugin it is easier to start weed like this:
+#     `weed server -filer=true`
+#
+version: "3.3"
+
+services:
+  master:
+    networks:
+      - hostnet
+    image: chrislusf/seaweedfs:latest
+    ports:
+    # - 9333:9333
+    # - 19333:19333
+    command: "master"
+
+  volume:
+    image: chrislusf/seaweedfs:latest
+    networks:
+      - hostnet
+    ports:
+    # - 8080:8080
+    # - 18080:18080
+    command: 'volume -max=15 -mserver="master:9333" -port=8080'
+
+  filer:
+    image: chrislusf/seaweedfs:latest
+    networks:
+      - hostnet
+    ports:
+    # - 8888:8888
+    # - 18888:18888
+    command: 'filer -master="master:9333"'
+    tty: true
+    stdin_open: true
+
+  s3:
+    image: chrislusf/seaweedfs:latest
+    networks:
+      - hostnet
+    ports:
+    # - 8333:8333
+    command: 's3 -filer="filer:8888"'
+
+networks:
+  hostnet:
+    external: true
+    name: host

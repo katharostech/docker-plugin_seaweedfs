@@ -1,5 +1,5 @@
 {
-  "description": "LizardFS volume plugin for Docker",
+  "description": "A Docker volume plugin for SeaweedFS",
   "documentation": "https://docs.docker.com/engine/extend/plugins/",
   "workdir": "/project",
   "entrypoint": [
@@ -12,14 +12,7 @@
       "settable": [
         "value"
       ],
-      "value": "mfsmaster"
-    },
-    {
-      "name": "PORT",
-      "settable": [
-        "value"
-      ],
-      "value": "9421"
+      "value": "localhost:8888"
     },
     {
       "name": "ROOT_VOLUME_NAME",
@@ -43,13 +36,6 @@
       "value": "/docker/volumes"
     },
     {
-      "name": "CONNECT_TIMEOUT",
-      "settable": [
-        "value"
-      ],
-      "value": "10000"
-    },
-    {
       "name": "LOG_LEVEL",
       "settable": [
         "value"
@@ -58,7 +44,7 @@
     }
   ],
   "interface": {
-    "socket": "lizardfs.sock",
+    "socket": "seaweedfs.sock",
     "types": [
       "docker.volumedriver/2.0"
     ]

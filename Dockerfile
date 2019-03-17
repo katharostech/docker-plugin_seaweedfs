@@ -1,28 +1,26 @@
-FROM node:8-slim
+FROM node:10-alpine
 
 ####
-# Install LizardFS client
+# Install SeaweedFS Client
 ####
 
-# Install LizardFS Key
-RUN wget -O - http://packages.lizardfs.com/lizardfs.key | apt-key add -
+ARG SEAWEEDFS_VERSION=1.25
+ENV SEAWEEDFS_VERSION=$SEAWEEDFS_VERSION
 
-# Add apt repositories
-RUN echo "deb http://packages.lizardfs.com/debian/jessie jessie main" > /etc/apt/sources.list.d/lizardfs.list && \
-    echo "deb-src http://packages.lizardfs.com/debian/jessie  jessie main" >> /etc/apt/sources.list.d/lizardfs.list
-
-# Install LizardFS packages
-RUN apt-get update && \
-    apt-get install -y lizardfs-client && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add fuse3 && \
+    apk add --no-cache --virtual build-dependencies --update wget curl ca-certificates && \
+    wget -qO /tmp/linux_amd64.tar.gz https://github.com/chrislusf/seaweedfs/releases/download/${SEAWEEDFS_VERSION}/linux_amd64.tar.gz && \
+    tar -C /usr/bin/ -xzvf /tmp/linux_amd64.tar.gz && \
+    apk del build-dependencies && \
+    rm -rf /tmp/*
 
 ####
 # Install Docker volume driver API server
 ####
 
 # Create directories for mounts
-RUN mkdir -p /mnt/lizardfs
+RUN mkdir -p /mnt/seaweedfs
 RUN mkdir -p /mnt/docker-volumes
 
 # Copy in package.json
@@ -37,7 +35,7 @@ RUN npm install
 # Set Configuration Defaults
 ENV HOST=mfsmaster \
     PORT=9421 \
-    ALIAS=lizardfs \
+    ALIAS=seaweedfs \
     ROOT_VOLUME_NAME="" \
     MOUNT_OPTIONS="" \
     REMOTE_PATH=/docker/volumes \

@@ -1,7 +1,7 @@
 {
-  "name": "docker-plugin_lizardfs",
+  "name": "docker-plugin_seaweedfs",
   "version": "1.0.0",
-  "description": "Docker volume driver plugin for LizardFS",
+  "description": "Docker volume driver plugin for SeaweedFS",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -9,10 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://phab.kadima.solutions/diffusion/DPLFS/docker-plugin_lizardfs.git"
+    "url": "https://phab.katharostech.com/diffusion/DPSFS/docker-plugin_seaweedfs.git"
   },
   "keywords": [
-    "LizardFS",
+    "SeaweedFS",
     "Docker"
   ],
   "author": "Zicklag <zicklag@katharostech.com>",

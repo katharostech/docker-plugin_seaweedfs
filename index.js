@@ -4,7 +4,7 @@
 const fs = require('fs-extra')
 const ls = require('ls')
 const path = require('path')
-const { execFileSync } = require('child_process')
+const { execFileSync, spawn } = require('child_process')
 
 const http = require('http')
 const terminus = require('@godaddy/terminus')
@@ -14,17 +14,17 @@ const express = require('express')
 // Globals
 //
 
-// Path on remote LizardFS filesystem that will be used for volume storage
+// Path on remote SeaweedFS filesystem that will be used for volume storage
 const remote_path = process.env['REMOTE_PATH']
 // Used when not running as a Docker plugin to set the driver alias
 var plugin_alias = process.env['ALIAS']
 if (plugin_alias == undefined || plugin_alias == '') {
-  plugin_alias = 'lizardfs'
+  plugin_alias = 'seaweedfs'
 }
 // The name of the "root" volume ( if specified )
 const root_volume_name = process.env['ROOT_VOLUME_NAME']
-// Mountpoint for remote LizardFS filesystem
-const volume_root = '/mnt/lizardfs'
+// Mountpoint for remote SeaweedFS filesystem
+const volume_root = '/mnt/seaweedfs'
 // Directory to mount volumes to inside the container
 const container_volume_path = '/mnt/docker-volumes'
 // Address that the webserver will listen on
@@ -57,7 +57,7 @@ if (process.env['MOUNT_OPTIONS'].length != 0) {
 */
 var mounted_volumes = {}
 
-// Records whether or not we have mounted the LizardFS volume root
+// Records whether or not we have mounted the SeaweedFS volume root
 var has_mounted_volume_root = false
 
 //
@@ -71,7 +71,7 @@ const log = require('loglevel-message-prefix')(require('loglevel'), {
 // Log level set by plugin config
 log.setLevel(process.env['LOG_LEVEL'])
 
-log.info('Starting up LizardFS volume plugin')
+log.info('Starting up SeaweedFS volume plugin')
 
 //
 // Express webserver and middleware
@@ -98,32 +98,34 @@ app.use(function (req, res, next) {
 })
 
 /*
- * Custom middleware that makes sure the LizardFS remote filesystem is mounted
+ * Custom middleware that makes sure the SeaweedFS remote filesystem is mounted
  * before any other plugin functions are executed.
  */
 app.use(function (req, res, next) {
-  // If we haven't mounted the LizardFS remote
+  // If we haven't mounted the SeaweedFS remote
   if (has_mounted_volume_root == false) {
-    log.info('Mounting LizardFS remote path')
+    log.info('Mounting SeaweedFS remote path')
 
     try {
-      // Mount LizardFS remote path
-      execFileSync(
-        'mfsmount',
+      // Mount SeaweedFS remote path
+      const proc = spawn(
+        'weed',
         [
-          volume_root,
-          '-H', process.env['HOST'],
-          '-P', process.env['PORT'],
-          '-S', remote_path,
+          'mount',
+          `-dir=${volume_root}`,
+          `-filer=${process.env['HOST']}`,
+          `-filer.path=${remote_path}`,
           ...mount_options
-        ],
-        {
-          // We only wait 3 seconds for the master to connect.
-          // This prevents the plugin from stalling Docker operations if the
-          // LizardFS master is unresponsive.
-          timeout: parseInt(process.env['CONNECT_TIMEOUT'])
-        }
+        ]
       )
+
+      proc.stdout.on('data', (data) => {
+        log.info(data);
+      });
+
+      proc.stderr.on('data', (data) => {
+        log.error(data);
+      });
 
       // Success
       has_mounted_volume_root = true
@@ -139,7 +141,7 @@ app.use(function (req, res, next) {
       return
     }
 
-  // If we have already mounted LizardFS remote
+  // If we have already mounted SeaweedFS remote
   } else {
     // Nothing to do, pass traffic to the next handler
     next()
@@ -184,20 +186,8 @@ app.post('/VolumeDriver.Create', function (req, res) {
   }
 
   try {
-    // Create volume on LizardFS filesystem
+    // Create volume on SeaweedFS filesystem
     fs.ensureDirSync(volume_path)
-
-    // If the user specified a replication goal for the volume
-    if (replication_goal != undefined) {
-      // Set the replication goal
-      execFileSync(
-        'lizardfs',
-        ['setgoal', '-r', replication_goal, volume_path],
-        {
-          timeout: parseInt(process.env['CONNECT_TIMEOUT'])
-        }
-      )
-    }
 
     // Success
     res.json({})
@@ -222,13 +212,13 @@ app.post('/VolumeDriver.Remove', function (req, res) {
     // You cannot delete the root volume.
     // Return an error.
     res.json({
-      Err: 'You cannot delete the LizardFS root volume.'
+      Err: 'You cannot delete the SeaweedFS root volume.'
     })
     return
   }
 
   try{
-    // Remove volume on LizardFS filesystem
+    // Remove volume on SeaweedFS filesystem
     fs.removeSync(volume_path)
 
     // Success
@@ -282,22 +272,24 @@ app.post('/VolumeDriver.Mount', function (req, res) {
       }
 
       // Mount volume
-      execFileSync(
-        'mfsmount',
+      const proc = spawn(
+        'weed',
         [
-          container_mountpoint,
-          '-H', process.env['HOST'],
-          '-P', process.env['PORT'],
-          '-S', mount_remote_path,
+          'mount',
+          `-dir=${container_mountpoint}`,
+          `-filer=${process.env['HOST']}`,
+          `-filer.path=${mount_remote_path}`,
           ...mount_options
-        ],
-        {
-          // We only wait 3 seconds for the master to connect.
-          // This prevents the plugin from stalling Docker operations if the
-          // LizardFS master is unresponsive.
-          timeout: parseInt(process.env['CONNECT_TIMEOUT'])
-        }
+        ]
       )
+
+      proc.stdout.on('data', (data) => {
+        log.info(data);
+      });
+
+      proc.stderr.on('data', (data) => {
+        log.error(data);
+      });
 
       // Start a list of containers that have mounted this volume
       mounted_volumes[volume_name] = [mount_id]
@@ -406,7 +398,7 @@ app.post('/VolumeDriver.Get', function (req, res) {
   }
 
   try {
-    // Check directory access on LizardFS directory
+    // Check directory access on SeaweedFS directory
     fs.accessSync(path.join(volume_root, req.body.Name),
       fs.constants.R_OK | fs.constants.W_OK)
 

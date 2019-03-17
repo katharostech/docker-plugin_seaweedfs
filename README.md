@@ -19,7 +19,7 @@ Once these conditions are met you are ready to install the plugin.
 
 The plugin is simple use and can be installed as a Docker container without having to install any other system dependencies.
 
-    $ docker plugin install --alias seaweedfs katharostech/seaweedfs-volume-plugin HOST=localhost:888
+    $ docker plugin install --alias seaweedfs katharostech/seaweedfs-volume-plugin HOST=localhost:8888
 
 Docker will prompt asking if you want to grant the permissions required to run the plugin. Select yes and the plugin will download and install.
 

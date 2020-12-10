@@ -120,11 +120,11 @@ app.use(function (req, res, next) {
       )
 
       proc.stdout.on('data', (data) => {
-        log.info(data);
+        log.info(data.toString());
       });
 
       proc.stderr.on('data', (data) => {
-        log.error(data);
+        log.error(data.toString());
       });
 
       // Success
@@ -284,11 +284,11 @@ app.post('/VolumeDriver.Mount', function (req, res) {
       )
 
       proc.stdout.on('data', (data) => {
-        log.info(data);
+        log.info(data.toString());
       });
 
       proc.stderr.on('data', (data) => {
-        log.error(data);
+        log.error(data.toString());
       });
 
       // Start a list of containers that have mounted this volume

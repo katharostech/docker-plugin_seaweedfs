@@ -4,13 +4,14 @@ FROM node:10-alpine
 # Install SeaweedFS Client
 ####
 
-ARG SEAWEEDFS_VERSION=1.81
+ARG SEAWEEDFS_VERSION=2.14
 ENV SEAWEEDFS_VERSION=$SEAWEEDFS_VERSION
 ARG GOARCH=amd64
 ENV GOARCH=$GOARCH
 
 RUN apk update && \
     apk add fuse3 && \
+    apk add fuse && \
     apk add --no-cache --virtual build-dependencies --update wget curl ca-certificates && \
     wget -qO /tmp/linux_${GOARCH}.tar.gz https://github.com/chrislusf/seaweedfs/releases/download/${SEAWEEDFS_VERSION}/linux_${GOARCH}.tar.gz && \
     tar -C /usr/bin/ -xzvf /tmp/linux_${GOARCH}.tar.gz && \

@@ -1,5 +1,7 @@
 # SeaweedFS Docker Plugin
 
+> :warning: **Warning:** This project is not maintained and may not be properly functioning. PRs and forks are welcome, but there are no guarantees to the current state of this plugin or its effectiveness. You may be interested in checking out the @onaci fork: https://github.com/onaci/docker-plugin-seaweedfs.
+
 > **Note:** This plugin was forked from a [LizardFS Docker Plugin](https://github.com/kadimasolutions/docker-plugin_lizardfs) so there may still be references to LizardFS somewhere in here that I haven't found and replaced yet.
 
 A Docker volume driver plugin for mounting a [SeaweedFS](https://github.com/chrislusf/seaweedfs) filesystem. Allows you to transparently provide storage for your Docker containers using SeaweedFS. This plugin can be used in combination with the [SeaweedFS Docker Image](https://github.com/chrislusf/seaweedfs/tree/master/docker) to create a fully containerized, clustered storage solution for Docker Swarm. Documentation and development are still in progress.

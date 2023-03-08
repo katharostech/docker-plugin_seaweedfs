@@ -96,7 +96,7 @@ You can configure the plugin through plugin variables. You may set these variabl
 
 #### HOST
 
-The hostname/ip address and port that will be used when connecting to the SeaweedFS filer.
+The hostname/ip address and port that will be used when connecting to the SeaweedFS filer. Concatenate multiple host and port combinations with a comma, to connect to multiple filer instances. For example `HOST=host1:8888,host2:8888`
 
 > **Note:** The plugin runs in `host` networking mode. This means that even though it is in a container, it shares its network configuration with the host and should resolve all network addresses as the host system would.
 
@@ -122,9 +122,16 @@ The name of the Root Volume. If specified, a special volume will be created of t
 
 #### LOG_LEVEL
 
-Plugin logging level. Set to `DEBUG` to get more verbose log messages. Logs from Docker plugins can be found in the Docker log and will be suffixed with the plugin ID.
+Plugin logging level. Set to `debug` to get more verbose log messages. Logs from Docker plugins can be found in the Docker log and will be suffixed with the plugin ID.
 
-**Default:** `INFO`
+**Default:** `info`
+
+## Log files
+
+The log files are in the folder `/run/docker/plugins/$your_plugin_id`.
+The Id `$your_plugin_id` of the plugin can be obtained via  `docker plugin inspect katharostech/seaweedfs-volume-plugin:rootfs | grep "\"Id\""`.
+
+Log file can be seen with `cat < init-stdout` or `cat < init-stderr`.
 
 ## Development
 
@@ -163,6 +170,13 @@ Finally run `make enable` to start the plugin.
 * **enable**: Enable the plugin
 * **disable**: Disable the plugin
 * **push**: Run the `clean`, `rootfs`, `create`, and `enable` targets, and push the plugin to DockerHub
+
+### Push to private registry
+
+**Optional**: to make the plugin available to a private registry `PRIVATE_REGISTRY` you can run
+
+`make PRIVATE_REGISTRY=<some url> push_private` 
+
 
 ### Running the tests
 

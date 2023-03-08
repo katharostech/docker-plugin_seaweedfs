@@ -1,5 +1,6 @@
 PLUGIN_NAME = katharostech/seaweedfs-volume-plugin
-PLUGIN_TAG ?= latest
+PLUGIN_TAG ?= rootfs
+PRIVATE_REGISTRY ?= localhost:5000
 
 all: clean rootfs create
 
@@ -27,6 +28,13 @@ create:
 	@echo "### create new plugin ${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin"
 	@docker plugin create ${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
 
+
+create_private:
+	@echo "### remove existing plugin (for private registry) ${PRIVATE_REGISTRY}/${PLUGIN_NAME}:${PLUGIN_TAG} if exists"
+	@docker plugin rm -f ${PRIVATE_REGISTRY}/${PLUGIN_NAME}:${PLUGIN_TAG} || true
+	@echo "### create new plugin (for private registry) ${PRIVATE_REGISTRY}/${PLUGIN_NAME}:${PLUGIN_TAG} from ./plugin"
+	@docker plugin create ${PRIVATE_REGISTRY}/${PLUGIN_NAME}:${PLUGIN_TAG} ./plugin
+
 enable:
 	@echo "### enable plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
 	@docker plugin enable ${PLUGIN_NAME}:${PLUGIN_TAG}
@@ -38,3 +46,10 @@ disable:
 push:  clean rootfs create enable
 	@echo "### push plugin ${PLUGIN_NAME}:${PLUGIN_TAG}"
 	@docker plugin push ${PLUGIN_NAME}:${PLUGIN_TAG}
+
+push_private: clean rootfs create_private
+	@echo "### push plugin ${PRIVATE_REGISTRY}/${PLUGIN_NAME}:${PLUGIN_TAG}"
+	@docker plugin push ${PRIVATE_REGISTRY}/${PLUGIN_NAME}:${PLUGIN_TAG}
+
+
+

@@ -4,7 +4,7 @@ FROM node:10-alpine
 # Install SeaweedFS Client
 ####
 
-ARG SEAWEEDFS_VERSION=2.14
+ARG SEAWEEDFS_VERSION=3.43
 ENV SEAWEEDFS_VERSION=$SEAWEEDFS_VERSION
 ARG GOARCH=amd64
 ENV GOARCH=$GOARCH
@@ -36,8 +36,8 @@ WORKDIR /project
 RUN npm install
 
 # Set Configuration Defaults
-ENV HOST=mfsmaster \
-    PORT=9421 \
+ENV HOST=master \
+    PORT=8888 \
     ALIAS=seaweedfs \
     ROOT_VOLUME_NAME="" \
     MOUNT_OPTIONS="" \

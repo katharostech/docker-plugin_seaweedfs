@@ -4,7 +4,7 @@ This document outlines the basic Input-Process-Output flow of the volume plugin.
 
 ## Environment
 
-The LizardFS  Docker plugin implements the [Docker Plugin API](https://docs.docker.com/engine/extend/plugin_api/). The Inputs to the program are requests made by the Docker daemon to the plugin. Request such as `Plugin.Activate`, and `VolumeDriver.Create`, will be sent by the Docker daemon to the the unix socket, `/run/docker/plugins/lizardfs.sock`, and the LizardFS Docker plugin will process the request, take the required actions, and respond with an appropriate response.
+The SeaweedFS Docker plugin implements the [Docker Plugin API](https://docs.docker.com/engine/extend/plugin_api/). The Inputs to the program are requests made by the Docker daemon to the plugin. Request such as `Plugin.Activate`, and `VolumeDriver.Create`, will be sent by the Docker daemon to the the unix socket, `/run/docker/plugins/$PLUGIN_ID/seaweedfs.sock`, and the SeaweedFS Docker plugin will process the request, take the required actions, and respond with an appropriate response.
 
 ## Requests
 
@@ -18,7 +18,7 @@ Empty payload.
 
 #### Process
 
-* Mount a subpath of the LizardFS filesystem specified by the `REMOTE_PATH` environment variable ( `/docker/volumes` by default) to `/mnt/lizardfs`. This is where the docker volumes will be stored. The `/mnt/lizardfs` directory will be referred to as the "volume root" throughout this document.
+* Mount a subpath of the SeaweedFS filesystem specified by the `REMOTE_PATH` environment variable ( `/docker/volumes` by default) to `/mnt/seaweedfs`. This is where the docker volumes will be stored. The `/mnt/lizardfs` directory will be referred to as the "volume root" throughout this document.
 
 #### Output
 
@@ -34,17 +34,13 @@ Empty payload.
 
 ```json
 {
-    "Name": "volume_name",
-    "Opts": {
-      "ReplicationGoal": "replication_goal_number_or_name"
-    }
+    "Name": "volume_name"
 }
 ```
 
 #### Process
 
-* Create sub-directory of volume root with the given `Name`. For example, `/mnt/lizardfs/volume_name`.
-* Use `lizardfs setgoal` to set the replication goal for that Docker Volume to the value specified in the `Opts` ( if specified ).
+* Create sub-directory of volume root with the given `Name`. For example, `/mnt/seaweedfs/volume_name`.
 
 #### Output
 
@@ -68,7 +64,7 @@ Error message ( if one occurred ).
 
 #### Process
 
-* Delete the directory in the volume root with the given `Name`. For example, `/mnt/lizardfs/volume_name`.
+* Delete the directory in the volume root with the given `Name`. For example, `/mnt/seaweedfs/volume_name`.
 
 #### Output
 
@@ -93,8 +89,8 @@ Error message ( if one occurred ).
 
 #### Process
 
-* Create a directory outside of the LizardFS root mountpoint using the given `Name`, such as `/mnt/docker-volumes/volume_name`.
-* Mount the subpath of the LizardFS filesystem ( for example, `/docker/volumes/volume_name` ) to the newly created mountpoint.
+* Create a directory outside of the SeaweedFS root mountpoint using the given `Name`, such as `/mnt/docker-volumes/volume_name`.
+* Mount the subpath of the SeaweedFS filesystem ( for example, `/docker/volumes/volume_name` ) to the newly created mountpoint.
 * Add the `ID` to the list of containers that have mounted `Name` in the `mounted_volumes` Javascript object. This variable is used to keep track of which containers have mounted the volume.
 
 #### Output
@@ -198,7 +194,7 @@ Return the volume name
 
 #### Process
 
-* Get a list of the directories in the volume root: `/mnt/lizardfs/`.
+* Get a list of the directories in the volume root: `/mnt/seaweedfss/`.
 * If the volume is mounted on the host, provide the `Mountpoint`.
 
 #### Output

@@ -171,7 +171,6 @@ function volume_is_mounted(volume_name) {
 
 app.post('/VolumeDriver.Create', function (req, res) {
   var volume_name = req.body.Name
-  var replication_goal = req.body.Opts.ReplicationGoal
   var volume_path = path.join(volume_root, volume_name)
 
   log.info(`/VolumeDriver.Create: ${volume_name}`)

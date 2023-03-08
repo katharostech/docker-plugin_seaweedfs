@@ -36,7 +36,7 @@ WORKDIR /project
 RUN npm install
 
 # Set Configuration Defaults
-ENV HOST=master \
+ENV HOST=filer \
     PORT=8888 \
     ALIAS=seaweedfs \
     ROOT_VOLUME_NAME="" \
